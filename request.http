@@ -1,0 +1,82 @@
+### Créer une nouvelle fiche
+POST http://localhost:8000/fiche
+Content-Type: application/json
+
+{
+  "id": "123456",
+  "lastname": "Doe",
+  "firstname": "John",
+  "telephone": "0102030405",
+  "email": "john.doe@example.com",
+  "address": "1 rue de la Paix",
+  "origin_contact": "Salon",
+  "status": "In Progress",
+  "commentary": "http://example.com/comment",
+  "works_planned": [
+    {
+      "work": "fenetre",
+      "materials": ["PVC"],
+      "details": {}
+    }
+  ]
+}
+
+### Récupérer la fiche par ID
+GET http://localhost:8000/fiche/123456
+Accept: application/json
+
+### Mettre à jour partiellement la fiche (PATCH)
+PATCH http://localhost:8000/fiche/123456
+Content-Type: application/json
+
+{
+  "id": "123456",
+  "lastname": "Doe",
+  "firstname": "Johnny",
+  "telephone": "0102030406",
+  "email": "johnny.doe@example.com",
+  "address": "2 rue de la Paix",
+  "origin_contact": "Réseaux sociaux",
+  "status": "In Progress",
+  "commentary": "http://example.com/updated_comment",
+  "works_planned": [
+    {
+      "work": "fenetre",
+      "materials": ["PVC"],
+      "details": {}
+    }
+  ]
+}
+
+### Finaliser la fiche (compléter la deuxième partie)
+POST http://localhost:8000/fiche/123456/complete
+Content-Type: application/json
+
+{
+  "works_planned": [
+    {
+      "work": "fenetre",
+      "details": {
+        "choice_piece": "Salon",
+        "type_pose": "Renovation",
+        "type_window": "Fenetre 1 vantail",
+        "tirant": "Droit",
+        "hauteur": 120.0,
+        "largeur": 80.0,
+        "allege": "Oui",
+        "hab_int": "Oui",
+        "hab_ext": "Oui",
+        "grille_ventilation": "Oui",
+        "commentary": "http://example.com/final_comment",
+        "materials": [
+          "PVC",
+          "ALU"
+        ]
+      }
+    }
+  ]
+}
+
+
+### Supprimer la fiche
+DELETE http://localhost:8000/fiche/123456

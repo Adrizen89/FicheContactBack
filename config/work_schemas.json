@@ -1,0 +1,420 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+      "materialColor": {
+        "type": "object",
+        "properties": {
+          "materiau": {
+            "type": "string",
+            "enum": ["PVC", "BOIS", "ALU"]
+          },
+          "color": {
+            "type": "string"
+          }
+        },
+        "required": ["materiau", "color"],
+        "if": {
+          "properties": {
+            "materiau": { "const": "PVC" }
+          }
+        },
+        "then": {
+          "properties": {
+            "color": {
+              "enum": ["GRIS", "BEIGE", "BLANC"]
+            }
+          }
+        },
+        "else": {
+          "if": {
+            "properties": {
+              "materiau": { "const": "BOIS" }
+            }
+          },
+          "then": {
+            "properties": {
+              "color": {
+                "enum": ["CHENE CLAIR", "CHENE FONCE"]
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "color": {
+                "enum": ["ALU_OPTION1", "ALU_OPTION2"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "porte_entree": {
+      "fields": [
+        {
+          "name": "material_color",
+          "$ref": "#/definitions/materialColor",
+          "required": true
+        },
+        {
+          "name": "type_pose",
+          "type": "string",
+          "enum": ["Renovation", "Neuf", "Feuillure"],
+          "required": true
+        },
+        {
+          "name": "tirant",
+          "type": "string",
+          "enum": ["Droit", "Gauche"],
+          "required": true
+        },
+        {
+          "name": "hauteur",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "largeur",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "allege",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "commentary",
+          "type": "string",
+          "format": "uri",
+          "required": true
+        }
+      ]
+    },
+    "volet_roulant": {
+      "fields": [
+        {
+          "name": "material_color",
+          "$ref": "#/definitions/materialColor",
+          "required": true
+        },
+        {
+          "name": "type_pose",
+          "type": "string",
+          "enum": ["Renovation", "Neuf", "Feuillure"],
+          "required": true
+        },
+        {
+          "name": "hauteur",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "largeur",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "allege",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "commentary",
+          "type": "string",
+          "format": "uri",
+          "required": true
+        }
+      ]
+    },
+    "volet_battant": {
+      "fields": [
+        {
+          "name": "material_color",
+          "$ref": "#/definitions/materialColor",
+          "required": true
+        },
+        {
+          "name": "type_pose",
+          "type": "string",
+          "enum": ["Renovation", "Neuf", "Feuillure"],
+          "required": true
+        },
+        {
+          "name": "hauteur",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "largeur",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "allege",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "commentary",
+          "type": "string",
+          "format": "uri",
+          "required": true
+        }
+      ]
+    },
+    "store_exterieur": {
+      "fields": [
+        {
+          "name": "color",
+          "type": "string",
+          "enum": ["Rouge", "Vert", "Jaune"],
+          "required": true
+        },
+        {
+          "name": "type_pose",
+          "type": "string",
+          "enum": ["Exterieur", "Face"],
+          "required": true
+        },
+        {
+          "name": "sortie_elec",
+          "type": "string",
+          "enum": ["Gauche", "Droite"],
+          "required": true
+        },
+        {
+          "name": "avancee",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "largeur",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "allege",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "commentary",
+          "type": "string",
+          "format": "uri",
+          "required": true
+        }
+      ]
+    },
+    "store_interieur": {
+      "fields": [
+        {
+          "name": "color",
+          "type": "string",
+          "enum": ["Rouge", "Vert", "Jaune"],
+          "required": true
+        },
+        {
+          "name": "type_pose",
+          "type": "string",
+          "enum": ["Exterieur", "Face", "Baie"],
+          "required": true
+        },
+        {
+          "name": "manoeuvre",
+          "type": "string",
+          "enum": ["Gauche", "Droite"],
+          "required": true
+        },
+        {
+          "name": "hauteur",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "largeur",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "allege",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "commentary",
+          "type": "string",
+          "format": "uri",
+          "required": true
+        }
+      ]
+    },
+    "fenetre": {
+      "fields": [
+        {
+          "name": "material_color",
+          "$ref": "#/definitions/materialColor",
+          "required": true
+        },
+        {
+          "name": "choice_piece",
+          "type": "string",
+          "enum": ["Salon", "Chambre", "Cuisine"],
+          "required": true
+        },
+        {
+          "name": "type_pose",
+          "type": "string",
+          "enum": ["Renovation", "Neuf", "Feuillure"],
+          "required": true
+        },
+        {
+          "name": "type_window",
+          "type": "string",
+          "enum": [
+            "Fenetre 1 vantail",
+            "Fenetre 2 vantaux",
+            "Porte Fenetre 1 vantail",
+            "Porte Fenetre 2 vantaux"
+          ],
+          "required": true
+        },
+        {
+          "name": "tirant",
+          "type": "string",
+          "enum": ["Droit", "Gauche"],
+          "required": false
+        },
+        {
+          "name": "hauteur",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "largeur",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "allege",
+          "type": "string",
+          "enum": ["Oui", "Non"],
+          "required": true
+        },
+        {
+          "name": "hab_int",
+          "type": "string",
+          "enum": ["Oui", "Non"],
+          "required": true
+        },
+        {
+          "name": "hab_ext",
+          "type": "string",
+          "enum": ["Oui", "Non"],
+          "required": true
+        },
+        {
+          "name": "grille_ventilation",
+          "type": "string",
+          "enum": ["Oui", "Non"],
+          "required": true
+        },
+        {
+          "name": "commentary",
+          "type": "string",
+          "format": "uri",
+          "required": true
+        }
+      ],
+      "if": {
+        "properties": {
+          "type_window": {
+            "enum": ["Fenetre 1 vantail", "Porte Fenetre 1 vantail"]
+          }
+        }
+      },
+      "then": {
+        "required": ["tirant"]
+      }
+    },
+    "portail": {
+      "fields": [
+        {
+          "name": "material_color",
+          "$ref": "#/definitions/materialColor",
+          "required": true
+        },
+        {
+          "name": "hauteur",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "commentary",
+          "type": "string",
+          "format": "uri",
+          "required": true
+        }
+      ]
+    },
+    "pergola": {
+      "fields": [
+        {
+          "name": "material_color",
+          "$ref": "#/definitions/materialColor",
+          "required": true
+        },
+        {
+          "name": "hauteur",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "commentary",
+          "type": "string",
+          "format": "uri",
+          "required": true
+        }
+      ]
+    },
+    "porte_de_garage": {
+      "fields": [
+        {
+          "name": "material_color",
+          "$ref": "#/definitions/materialColor",
+          "required": true
+        },
+        {
+          "name": "hauteur",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "commentary",
+          "type": "string",
+          "format": "uri",
+          "required": true
+        }
+      ]
+    },
+    "cloture": {
+      "fields": [
+        {
+          "name": "material_color",
+          "$ref": "#/definitions/materialColor",
+          "required": true
+        },
+        {
+          "name": "hauteur",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "commentary",
+          "type": "string",
+          "format": "uri",
+          "required": true
+        }
+      ]
+    }
+  }
+  
