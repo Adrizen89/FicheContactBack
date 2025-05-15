@@ -35,7 +35,9 @@ def get_completion_fiche_usecase(
 def get_config_service():
     return WorkSchemaConfigService(config_path="config/work_schemas.json")
 
-
+@app.get("/")
+def read_root():
+    return {"message": "API en ligne ! ✅"}
 
 @app.get("/schema/{work}", response_model=Dict[str, Any])
 def get_schema(work: str, config_service: WorkSchemaConfigService = Depends(get_config_service)):
