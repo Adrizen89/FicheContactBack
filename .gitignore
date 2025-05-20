@@ -1,0 +1,36 @@
+# 🐍 Fichiers Python compilés
+__pycache__/
+*.py[cod]
+*.pyo
+
+# 📦 Dépendances locales
+venv/
+.env
+
+# 📄 Fichiers temporaires ou de logs
+*.log
+*.sqlite
+*.db
+.DS_Store
+
+# 📂 Pytest / coverage / mypy / cache
+htmlcov/
+.coverage
+.tox/
+.cache/
+.mypy_cache/
+pytest_cache/
+
+# 📂 Outils IDE
+.vscode/
+.idea/
+*.swp
+
+# 📦 Build / dist (si lib ou script exportable)
+build/
+dist/
+*.egg-info/
+
+# 📤 Dumps ou fichiers d’exports
+*.sql
+*.dump
