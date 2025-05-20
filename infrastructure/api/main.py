@@ -130,8 +130,12 @@ def get_distinct_cities(db: Session = Depends(get_session)):
 @app.middleware("http")
 async def restrict_origin(request: Request, call_next):
     origin = request.headers.get("origin")
-    allowed_origins = ['*']
-    # autoriser aussi null pour certains cas (fetch local, tests)
+    allowed_origins = [
+        "https://pro-fiche.vercel.app",
+        "http://localhost:5173"
+    ]
     if origin and origin not in allowed_origins:
+        print(f"❌ Origin interdit : {origin}")
         raise HTTPException(status_code=403, detail="Forbidden")
     return await call_next(request)
+
