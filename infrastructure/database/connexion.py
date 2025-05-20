@@ -1,7 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-db_url = 'postgresql://adrien@localhost/fichecontact'
+db_url = 'postgresql://adrien:Sbteam0109*@localhost/fichecontact'
+
 
 
 def get_engine():
