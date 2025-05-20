@@ -1,7 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-db_url = 'sqlite:///infrastructure/database/fiche_contact.db'
+db_url = 'postgresql://adrien@localhost/fichecontact'
+
 
 def get_engine():
        return create_engine(db_url)
