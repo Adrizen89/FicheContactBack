@@ -1,5 +1,5 @@
 from typing import Any, Dict, List
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Request
 from sqlalchemy.orm import Session
 from config.works_schemas_config import WorkSchemaConfigService
 from contact_fiche.contact_fiche_usecases import CompletionFicheUsecase
@@ -127,4 +127,11 @@ def get_distinct_cities(db: Session = Depends(get_session)):
     return [ville[0] for ville in villes if ville[0]]
 
 
-
+@app.middleware("http")
+async def restrict_origin(request: Request, call_next):
+    origin = request.headers.get("origin")
+    allowed_origins = allowed_origin
+    # autoriser aussi null pour certains cas (fetch local, tests)
+    if origin and origin not in allowed_origins:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    return await call_next(request)
