@@ -130,7 +130,7 @@ def get_distinct_cities(db: Session = Depends(get_session)):
 @app.middleware("http")
 async def restrict_origin(request: Request, call_next):
     origin = request.headers.get("origin")
-    allowed_origins = allowed_origin
+    allowed_origins = ['*']
     # autoriser aussi null pour certains cas (fetch local, tests)
     if origin and origin not in allowed_origins:
         raise HTTPException(status_code=403, detail="Forbidden")
