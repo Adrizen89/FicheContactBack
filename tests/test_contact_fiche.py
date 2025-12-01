@@ -18,34 +18,42 @@ def config_service() -> WorkSchemaConfigService:
 @pytest.fixture
 def new_fiche(repository):
     create_fiche_usecase = CreateFicheUsecase(repository)
-    travaux_data = [
-        {"work": "Porte", "materials": ["PVC", "ALU"]},
-        {"work": "Fenêtre", "materials": ["BOIS"]}
-    ]
     return create_fiche_usecase(
-        lastname= "Doe", 
-        firstname= "John", 
+        lastname="Doe",
+        firstname="John",
+        date_rdv="2025-01-15",
+        heure_rdv="14:00",
         telephone="012345678",
         email="johndoe@gmail.com",
-        address="1 rue de Paris, 75000",
+        address="1 rue de Paris",
+        city="Paris",
+        code_postal="75000",
+        type_logement="Maison",
+        statut_habitation="Propriétaire",
         origin_contact=OriginContact.AFFICHAGE,
-        works_planned= travaux_data,
+        works_planned=None,
         commentary="Ceci est un commentaire"
-        )
+    )
 
 @pytest.fixture
 def new_fiche_empty_works(repository):
     create_fiche_usecase = CreateFicheUsecase(repository)
     return create_fiche_usecase(
-        lastname= "Doe", 
-        firstname= "John", 
+        lastname="Doe",
+        firstname="John",
+        date_rdv="2025-01-15",
+        heure_rdv="14:00",
         telephone="012345678",
         email="johndoe@gmail.com",
-        address="1 rue de Paris, 75000",
+        address="1 rue de Paris",
+        city="Paris",
+        code_postal="75000",
+        type_logement="Maison",
+        statut_habitation="Propriétaire",
         origin_contact=OriginContact.AFFICHAGE,
-        works_planned= [],
+        works_planned=None,
         commentary="Ceci est un commentaire"
-        )
+    )
 
 @pytest.fixture
 def sample_config_file(tmp_path: Path) -> str:
@@ -70,20 +78,22 @@ def sample_config_file(tmp_path: Path) -> str:
 
 def test_create_fiche(repository):
     create_usecase = CreateFicheUsecase(repository)
-    travaux_data = [
-        {"work": "Porte", "materials": ["PVC", "ALU"]},
-        {"work": "Fenêtre", "materials": ["BOIS"]}
-    ]
     created_fiche = create_usecase(
-        lastname= "Doe", 
-        firstname= "John", 
+        lastname="Doe",
+        firstname="John",
+        date_rdv="2025-01-15",
+        heure_rdv="14:00",
         telephone="012345678",
         email="johndoe@gmail.com",
-        address="1 rue de Paris, 75000",
+        address="1 rue de Paris",
+        city="Paris",
+        code_postal="75000",
+        type_logement="Maison",
+        statut_habitation="Propriétaire",
         origin_contact=OriginContact.AFFICHAGE,
-        works_planned= travaux_data,
-        commentary="ceci est un commentaire",
-        )
+        works_planned=None,
+        commentary="ceci est un commentaire"
+    )
 
     fetched_fiche = repository.get_by_id(created_fiche.id)
     assert fetched_fiche is not None
@@ -148,20 +158,20 @@ def test_update_fiche_origin_only(repository, new_fiche):
     assert fetched_fiche.origin_contact == OriginContact.RS
 
 def test_update_fiche_works_planned_only(repository, new_fiche):
+    from contact_fiche.entities.works_planned_entity import WorksPlanned
     update_fiche_usecase = UpdateFicheUsecase(repository)
     travaux_data = [
-        {"work": "Porte", "materials": ["PVC", "ALU"]},
-        {"work": "Portail", "materials": ["ALU"]}
+        WorksPlanned(work="Porte", details={"hauteur": 200, "largeur": 90}),
+        WorksPlanned(work="Portail", details={"hauteur": 180, "largeur": 300})
     ]
-    updated_fiche = update_fiche_usecase(new_fiche.id, new_works_planned= travaux_data)
+    updated_fiche = update_fiche_usecase(new_fiche.id, new_works_planned=travaux_data)
 
     fetched_fiche = repository.get_by_id(new_fiche.id)
     assert fetched_fiche is not None
     assert len(fetched_fiche.works_planned) == len(travaux_data)
     for wp, expected in zip(fetched_fiche.works_planned, travaux_data):
-        assert wp.work == expected["work"]
-        # Pour les matériaux, comparez les valeurs (si Material est un Enum)
-        assert [m.value for m in wp.materials] == expected["materials"]
+        assert wp.work == expected.work
+        assert wp.details == expected.details
 
 def test_update_fiche_commentary(repository, new_fiche):
     update_fiche_usecase = UpdateFicheUsecase(repository)
@@ -203,13 +213,13 @@ def test_cant_completion_fiche_works_empty(repository, new_fiche_empty_works, co
     completion_fiche_usecase = CompletionFicheUsecase(repository, config_service)
 
     with pytest.raises(ValueError):
-        completion_fiche_usecase(new_fiche_empty_works.id, works_planned={})
+        completion_fiche_usecase(new_fiche_empty_works.id, works_data=[])
 
 def test_cant_completion_fiche_not_found(repository, config_service):
     completion_fiche_usecase = CompletionFicheUsecase(repository, config_service)
 
     with pytest.raises(ValueError):
-        completion_fiche_usecase("id-not-existing", works_planned={"porte":""})
+        completion_fiche_usecase("id-not-existing", works_data=[{"work": "porte", "details": {}}])
 
 
 def test_load_config(sample_config_file):

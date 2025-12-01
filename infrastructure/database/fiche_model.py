@@ -20,38 +20,15 @@ class FicheModel(Base):
     email = Column(String, nullable=False)
     address = Column(String, nullable=False)
     code_postal = Column(String, nullable=False)
-    city = Column(String, nullable=False) 
+    city = Column(String, nullable=False)
     type_logement = Column(String, nullable=True)
     statut_habitation = Column(String, nullable=True)
     origin_contact = Column(SQLAEnum(OriginContact), nullable=False)
     status = Column(SQLAEnum(Status), default=Status.DEFAULT)
     commentary = Column(String, nullable=True)
-    planned_works = Column(JSON, nullable=False, default=list)
-    works_details = Column(JSON, nullable=True)
     work_planned = relationship(
         "WorkPlannedModel", back_populates="fiche", cascade="all, delete-orphan"
     )
-
-
-    def to_entity(self):
-        return Fiche(
-            id=self.id, # type: ignore
-            firstname=self.firstname,# type: ignore
-            lastname=self.lastname,# type: ignore
-            date_rdv=self.date_rdv,# type: ignore
-            heure_rdv=self.heure_rdv,# type: ignore
-            email=self.email,# type: ignore
-            telephone=self.telephone,# type: ignore
-            address=self.address,# type: ignore
-            code_postal=self.code_postal,# type: ignore
-            city=self.city,# type: ignore
-            type_logement=self.type_logement,# type: ignore
-            statut_habitation=self.statut_habitation,# type: ignore
-            origin_contact=self.origin_contact,# type: ignore
-            works_details=self.works_details,  # type: ignore
-            status=self.status,# type: ignore
-            commentary=self.commentary# type: ignore
-        )
 
 
 

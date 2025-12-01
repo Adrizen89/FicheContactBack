@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Tests et coverage
+htmlcov/
+.coverage
+.pytest_cache/
+.mypy_cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Git
+.git/
+.gitignore
+
+# Environnement
+.env
+
+# Documentation
+*.md
+!README.md
+
+# Fichiers temporaires
+*.log
+*.db
+*.sqlite
+.DS_Store
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore

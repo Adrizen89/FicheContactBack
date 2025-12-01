@@ -1,0 +1,93 @@
+name: Deploy Simple
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Deploy to VPS
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USER }}
+        password: ${{ secrets.VPS_PASSWORD }}
+        script: |
+          # Créer le dossier si nécessaire
+          mkdir -p ~/apps/fiche-api
+          cd ~/apps/fiche-api
+
+          # Cloner ou mettre à jour le code
+          if [ -d ".git" ]; then
+            git pull origin main
+          else
+            git clone https://github.com/${{ github.repository }} .
+          fi
+
+          # Créer docker-compose.yml si absent
+          cat > docker-compose.yml << 'EOF'
+          version: '3.8'
+
+          services:
+            db:
+              container_name: fiche-db-prod
+              image: postgres:15-alpine
+              environment:
+                POSTGRES_DB: fichecontact
+                POSTGRES_USER: ficheuser
+                POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+              volumes:
+                - ./data/postgres:/var/lib/postgresql/data
+              restart: always
+              healthcheck:
+                test: ["CMD-SHELL", "pg_isready -U ficheuser"]
+                interval: 10s
+                timeout: 5s
+                retries: 5
+
+            api:
+              container_name: fiche-api-prod
+              image: python:3.12-slim
+              ports:
+                - "8000:8000"
+              environment:
+                DATABASE_URL: postgresql://ficheuser:${{ secrets.DB_PASSWORD }}@db:5432/fichecontact
+                ENVIRONMENT: production
+              volumes:
+                - .:/app
+              working_dir: /app
+              command: sh -c "pip install --no-cache-dir -r requirements.txt && uvicorn infrastructure.api.main:app --host 0.0.0.0 --port 8000"
+              depends_on:
+                db:
+                  condition: service_healthy
+              restart: always
+              healthcheck:
+                test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+                interval: 30s
+                timeout: 10s
+                retries: 3
+                start_period: 40s
+          EOF
+
+          # Redémarrer les conteneurs
+          docker compose down
+          docker compose up -d
+
+          # Attendre le démarrage
+          echo "⏳ Attente du démarrage..."
+          sleep 15
+
+          # Vérifier que ça marche
+          if curl -f http://localhost:8000/ > /dev/null 2>&1; then
+            echo "✅ Déploiement réussi !"
+          else
+            echo "❌ Échec du déploiement"
+            docker logs fiche-api-prod
+            exit 1
+          fi

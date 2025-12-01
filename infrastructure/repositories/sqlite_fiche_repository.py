@@ -1,9 +1,10 @@
 from typing import List, Optional
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 
 from contact_fiche.enums import Status
 from infrastructure.database.fiche_converter import FicheConverter
-from infrastructure.database.fiche_model import FicheModel
+from infrastructure.database.fiche_model import FicheModel, WorkPlannedModel
 from contact_fiche.entities.fiche_entity import Fiche
 
 class SQLiteFicheRepository:
@@ -15,52 +16,89 @@ class SQLiteFicheRepository:
         return FicheConverter.model_to_entity(fiche_model) if fiche_model else None
 
     def save(self, fiche: Fiche) -> None:
-        fiche_model = FicheConverter.entity_to_model(fiche)
-        self.session.add(fiche_model)
-        self.session.commit()
+        try:
+            fiche_model = FicheConverter.entity_to_model(fiche)
+            self.session.add(fiche_model)
+            self.session.commit()
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            raise RuntimeError(f"Erreur lors de la sauvegarde de la fiche: {str(e)}")
 
     def update(self, id: str, fiche: Fiche) -> None:
+        try:
+            # Récupérer la fiche existante
+            fiche_model = self.session.query(FicheModel).filter(FicheModel.id == id).first()
+            if not fiche_model:
+                raise ValueError(f"Fiche avec l'id {id} non trouvée")
 
-        self.session.query(FicheModel).filter(FicheModel.id == id).update({
-            "lastname": fiche.lastname,
-            "firstname": fiche.firstname,
-            "date_rdv": fiche.date_rdv,
-            "heure_rdv": fiche.heure_rdv,
-            "telephone": fiche.telephone,
-            "email": fiche.email,
-            "address": fiche.address,
-            "code_postal": fiche.code_postal,
-            "city": fiche.city,
-            "planned_works": fiche.planned_works,
-            "origin_contact": fiche.origin_contact,  
-            "status": fiche.status,                  
-            "commentary": fiche.commentary,
-            "works_details": fiche.works_details,
+            # Mettre à jour les champs simples
+            fiche_model.lastname = fiche.lastname
+            fiche_model.firstname = fiche.firstname
+            fiche_model.date_rdv = fiche.date_rdv
+            fiche_model.heure_rdv = fiche.heure_rdv
+            fiche_model.telephone = fiche.telephone
+            fiche_model.email = fiche.email
+            fiche_model.address = fiche.address
+            fiche_model.code_postal = fiche.code_postal
+            fiche_model.city = fiche.city
+            fiche_model.type_logement = fiche.type_logement
+            fiche_model.statut_habitation = fiche.statut_habitation
+            fiche_model.origin_contact = fiche.origin_contact
+            fiche_model.status = fiche.status
+            fiche_model.commentary = fiche.commentary
 
-            
-            # Ajoutez ici la gestion des champs complexes comme works_planned ou works_details si nécessaire
-        })
-        self.session.commit()
+            # Supprimer les anciens works_planned et ajouter les nouveaux
+            if fiche.works_planned:
+                # Supprimer les anciens
+                self.session.query(WorkPlannedModel).filter(WorkPlannedModel.fiche_id == id).delete()
+
+                # Ajouter les nouveaux
+                for wp in fiche.works_planned:
+                    wp_model = WorkPlannedModel(
+                        fiche_id=id,
+                        work=wp.work,
+                        details=wp.details
+                    )
+                    self.session.add(wp_model)
+
+            self.session.commit()
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            raise RuntimeError(f"Erreur lors de la mise à jour de la fiche: {str(e)}")
 
     def delete(self, id: str) -> None:
-        self.session.query(FicheModel).filter(FicheModel.id == id).delete()
-        self.session.commit()
+        try:
+            fiche_model = self.session.query(FicheModel).filter(FicheModel.id == id).first()
+            if not fiche_model:
+                raise ValueError(f"Fiche avec l'id {id} non trouvée")
+
+            self.session.delete(fiche_model)
+            self.session.commit()
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            raise RuntimeError(f"Erreur lors de la suppression de la fiche: {str(e)}")
 
     def get_all(self) -> List[Fiche]:
         fiche_models = self.session.query(FicheModel).all()
         return [FicheConverter.model_to_entity(model) for model in fiche_models]
-    
+
     def get_en_cours(self) -> List[Fiche]:
-        results = (
+        fiche_models = (
             self.session.query(FicheModel)
             .filter(FicheModel.status == Status.IN_PROGRESS)
             .all()
         )
-        return [fiche.to_entity() for fiche in results]
-    
+        return [FicheConverter.model_to_entity(model) for model in fiche_models]
+
     def valider_fiche(self, id: str) -> None:
-        self.session.query(FicheModel).filter(FicheModel.id == id).update({
-            "status": Status.COMPLETED
-        })
-        self.session.commit()
+        try:
+            fiche_model = self.session.query(FicheModel).filter(FicheModel.id == id).first()
+            if not fiche_model:
+                raise ValueError(f"Fiche avec l'id {id} non trouvée")
+
+            fiche_model.status = Status.COMPLETED
+            self.session.commit()
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            raise RuntimeError(f"Erreur lors de la validation de la fiche: {str(e)}")
 

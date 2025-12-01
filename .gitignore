@@ -31,6 +31,9 @@ build/
 dist/
 *.egg-info/
 
-# 📤 Dumps ou fichiers d’exports
-*.sql
+# 📤 Dumps ou fichiers d'exports
 *.dump
+
+# Exclure les dumps SQL mais garder les migrations
+*.sql
+!migrations/*.sql
