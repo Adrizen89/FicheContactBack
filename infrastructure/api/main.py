@@ -1,7 +1,7 @@
 import logging
 from typing import Any, Dict, List
 
-from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
@@ -14,11 +14,7 @@ from contact_fiche.contact_fiche_usecases import (
     ValidateFicheUsecase,
 )
 from contact_fiche.entities.fiche_entity import Fiche
-from contact_fiche.entities.works_planned_entity import (
-    FicheCompletionData,
-    WorksPlanned,
-)
-from contact_fiche.enums import Status
+from contact_fiche.entities.works_planned_entity import FicheCompletionData
 from infrastructure.database.connexion import get_session
 from infrastructure.database.fiche_model import FicheModel
 from infrastructure.logging_config import setup_logging
@@ -148,10 +144,14 @@ def read_all_fiches(repository: SQLiteFicheRepository = Depends(get_fiche_reposi
     "/fiche",
     response_model=Fiche,
     summary="Créer une nouvelle fiche client",
-    description="Crée une fiche client avec les informations de contact et passe automatiquement le statut à IN_PROGRESS",
+    description=(
+        "Crée une fiche client avec les informations de contact "
+        "et passe automatiquement le statut à IN_PROGRESS"
+    ),
 )
 def create_fiche(
-    fiche: Fiche, usecase: CreateFicheUsecase = Depends(get_create_fiche_usecase)
+    fiche: Fiche,
+    usecase: CreateFicheUsecase = Depends(get_create_fiche_usecase),
 ):
     try:
         logger.info(

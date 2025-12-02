@@ -1,11 +1,8 @@
-from datetime import date
-
 from sqlalchemy import JSON, Column
 from sqlalchemy import Enum as SQLAEnum
 from sqlalchemy import ForeignKey, Integer, String
 from sqlalchemy.orm import declarative_base, relationship
 
-from contact_fiche.entities.fiche_entity import Fiche
 from contact_fiche.enums import OriginContact, Status
 from infrastructure.database.connexion import get_engine
 
