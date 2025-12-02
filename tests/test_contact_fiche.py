@@ -4,11 +4,13 @@ from pathlib import Path
 import pytest
 
 from config.works_schemas_config import WorkSchemaConfigService
-from contact_fiche.contact_fiche_usecases import (CompletionFicheUsecase,
-                                                  CreateFicheUsecase,
-                                                  DeleteFicheUsecase,
-                                                  OriginContact,
-                                                  UpdateFicheUsecase)
+from contact_fiche.contact_fiche_usecases import (
+    CompletionFicheUsecase,
+    CreateFicheUsecase,
+    DeleteFicheUsecase,
+    OriginContact,
+    UpdateFicheUsecase,
+)
 from contact_fiche.entities.works_planned_entity import WorksPlanned
 from contact_fiche.enums import Status
 from contact_fiche.in_memory_fiche_repository import InMemoryFicheRepository

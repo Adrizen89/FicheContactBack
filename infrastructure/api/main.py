@@ -6,20 +6,23 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from config.works_schemas_config import WorkSchemaConfigService
-from contact_fiche.contact_fiche_usecases import (CompletionFicheUsecase,
-                                                  CreateFicheUsecase,
-                                                  DeleteFicheUsecase,
-                                                  UpdateFicheUsecase,
-                                                  ValidateFicheUsecase)
+from contact_fiche.contact_fiche_usecases import (
+    CompletionFicheUsecase,
+    CreateFicheUsecase,
+    DeleteFicheUsecase,
+    UpdateFicheUsecase,
+    ValidateFicheUsecase,
+)
 from contact_fiche.entities.fiche_entity import Fiche
-from contact_fiche.entities.works_planned_entity import (FicheCompletionData,
-                                                         WorksPlanned)
+from contact_fiche.entities.works_planned_entity import (
+    FicheCompletionData,
+    WorksPlanned,
+)
 from contact_fiche.enums import Status
 from infrastructure.database.connexion import get_session
 from infrastructure.database.fiche_model import FicheModel
 from infrastructure.logging_config import setup_logging
-from infrastructure.repositories.sqlite_fiche_repository import \
-    SQLiteFicheRepository
+from infrastructure.repositories.sqlite_fiche_repository import SQLiteFicheRepository
 
 # Configuration du logging
 setup_logging()
