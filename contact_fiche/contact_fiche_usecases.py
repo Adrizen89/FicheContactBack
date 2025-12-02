@@ -1,20 +1,21 @@
 from abc import ABC
 from typing import Any, Dict, List, Optional
 from uuid import uuid4
-from jsonschema import validate, ValidationError
+
+from jsonschema import ValidationError, validate
 
 from config.works_schemas_config import WorkSchemaConfigService
+from contact_fiche.entities.fiche_entity import Fiche
 from contact_fiche.entities.works_planned_entity import WorksPlanned
 from contact_fiche.enums import OriginContact, Status
-from contact_fiche.entities.fiche_entity import Fiche
 from contact_fiche.fiche_repository_protocol import FicheRepository
+
 
 class Usecase(ABC):
     def __init__(self, repository: FicheRepository):
         self.repository = repository
 
-    def __call__(self, *args, **kwargs):
-        ...
+    def __call__(self, *args, **kwargs): ...
 
 
 class CreateFicheUsecase(Usecase):
@@ -33,7 +34,7 @@ class CreateFicheUsecase(Usecase):
         statut_habitation: str,
         commentary: str,
         origin_contact: OriginContact,
-        works_planned: Optional[List[WorksPlanned]] = None
+        works_planned: Optional[List[WorksPlanned]] = None,
     ) -> Fiche:
         works_planned_list = works_planned or []
 
@@ -53,11 +54,12 @@ class CreateFicheUsecase(Usecase):
             origin_contact=origin_contact,
             works_planned=works_planned_list,
             commentary=commentary,
-            status=Status.IN_PROGRESS
+            status=Status.IN_PROGRESS,
         )
 
         self.repository.save(fiche)
         return fiche
+
 
 class UpdateFicheUsecase(Usecase):
     def __call__(
@@ -76,7 +78,7 @@ class UpdateFicheUsecase(Usecase):
         new_statut_habitation: Optional[str] = None,
         new_origin: Optional[OriginContact] = None,
         new_works_planned: Optional[List[WorksPlanned]] = None,
-        new_commentary: Optional[str] = None
+        new_commentary: Optional[str] = None,
     ) -> Fiche:
         fiche = self.repository.get_by_id(id)
 
@@ -115,12 +117,14 @@ class UpdateFicheUsecase(Usecase):
         self.repository.update(id, fiche)
         return fiche
 
+
 class DeleteFicheUsecase(Usecase):
     def __call__(self, id: str) -> None:
         fiche = self.repository.get_by_id(id)
         if fiche is None:
             raise ValueError(f"Fiche with id {id} not found")
         self.repository.delete(fiche.id)
+
 
 class ValidateFicheUsecase(Usecase):
     """Use case pour valider une fiche et passer son statut à COMPLETED."""
@@ -136,7 +140,9 @@ class ValidateFicheUsecase(Usecase):
 
 
 class CompletionFicheUsecase(Usecase):
-    def __init__(self, repository: FicheRepository, config_service: WorkSchemaConfigService):
+    def __init__(
+        self, repository: FicheRepository, config_service: WorkSchemaConfigService
+    ):
         super().__init__(repository)
         self.config_service = config_service
 
@@ -159,12 +165,16 @@ class CompletionFicheUsecase(Usecase):
             try:
                 validate(instance=details, schema=schema)
             except ValidationError as e:
-                raise ValueError(f"Erreur de validation pour le work '{work_type}': {e.message}")
-        
+                raise ValueError(
+                    f"Erreur de validation pour le work '{work_type}': {e.message}"
+                )
+
         # Convertir la liste de dictionnaires en liste d'instances de WorksPlanned
         works_planned_list = [WorksPlanned(**item) for item in works_data]
-        fiche.works_planned = works_planned_list  # On assigne la liste d'instances, pas les dictionnaires
-        
+        fiche.works_planned = (
+            works_planned_list  # On assigne la liste d'instances, pas les dictionnaires
+        )
+
         fiche.status = Status.COMPLETED
         self.repository.update(fiche_id, fiche)
         return fiche

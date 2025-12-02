@@ -7,10 +7,12 @@ class OriginContact(Enum):
     RS = "Réseaux sociaux"
     AFFICHAGE = "Affichage"
 
+
 class Material(Enum):
     PVC = "PVC"
     BOIS = "BOIS"
     ALU = "ALU"
+
 
 class Status(Enum):
     DEFAULT = "Default"

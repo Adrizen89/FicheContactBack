@@ -1,4 +1,5 @@
 from typing import List, Optional
+
 from pydantic import BaseModel, Field
 
 from contact_fiche.entities.works_planned_entity import WorksPlanned

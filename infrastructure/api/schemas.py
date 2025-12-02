@@ -4,27 +4,44 @@ Séparation entre les modèles de domaine et les DTOs (Data Transfer Objects) de
 """
 
 from typing import List, Optional
-from pydantic import BaseModel, Field, EmailStr
-from contact_fiche.enums import OriginContact, Status
+
+from pydantic import BaseModel, EmailStr, Field
+
 from contact_fiche.entities.works_planned_entity import WorksPlanned
+from contact_fiche.enums import OriginContact, Status
 
 
 class FicheCreateRequest(BaseModel):
     """Schéma pour la création d'une fiche."""
-    lastname: str = Field(..., min_length=1, max_length=100, description="Nom de famille du client")
-    firstname: str = Field(..., min_length=1, max_length=100, description="Prénom du client")
+
+    lastname: str = Field(
+        ..., min_length=1, max_length=100, description="Nom de famille du client"
+    )
+    firstname: str = Field(
+        ..., min_length=1, max_length=100, description="Prénom du client"
+    )
     date_rdv: str = Field(..., description="Date du rendez-vous (format: YYYY-MM-DD)")
     heure_rdv: str = Field(..., description="Heure du rendez-vous (format: HH:MM)")
-    telephone: str = Field(..., pattern=r"^0[1-9]\d{8}$", description="Numéro de téléphone français")
+    telephone: str = Field(
+        ..., pattern=r"^0[1-9]\d{8}$", description="Numéro de téléphone français"
+    )
     email: EmailStr = Field(..., description="Adresse email du client")
     address: str = Field(..., min_length=1, description="Adresse complète")
-    code_postal: str = Field(..., pattern=r"^\d{5}$", description="Code postal (5 chiffres)")
+    code_postal: str = Field(
+        ..., pattern=r"^\d{5}$", description="Code postal (5 chiffres)"
+    )
     city: str = Field(..., min_length=1, max_length=100, description="Ville")
-    type_logement: str = Field(..., description="Type de logement (Maison, Appartement, etc.)")
-    statut_habitation: str = Field(..., description="Statut (Propriétaire, Locataire, etc.)")
+    type_logement: str = Field(
+        ..., description="Type de logement (Maison, Appartement, etc.)"
+    )
+    statut_habitation: str = Field(
+        ..., description="Statut (Propriétaire, Locataire, etc.)"
+    )
     origin_contact: OriginContact = Field(..., description="Origine du contact")
     commentary: str = Field(default="", description="Commentaire libre")
-    works_planned: Optional[List[WorksPlanned]] = Field(default_factory=list, description="Travaux planifiés")
+    works_planned: Optional[List[WorksPlanned]] = Field(
+        default_factory=list, description="Travaux planifiés"
+    )
 
     class Config:
         json_schema_extra = {
@@ -41,13 +58,14 @@ class FicheCreateRequest(BaseModel):
                 "type_logement": "Maison",
                 "statut_habitation": "Propriétaire",
                 "origin_contact": "Salon",
-                "commentary": "Premier contact suite au salon"
+                "commentary": "Premier contact suite au salon",
             }
         }
 
 
 class FicheUpdateRequest(BaseModel):
     """Schéma pour la mise à jour partielle d'une fiche."""
+
     lastname: Optional[str] = Field(None, min_length=1, max_length=100)
     firstname: Optional[str] = Field(None, min_length=1, max_length=100)
     date_rdv: Optional[str] = None
@@ -66,6 +84,7 @@ class FicheUpdateRequest(BaseModel):
 
 class FicheResponse(BaseModel):
     """Schéma de réponse pour une fiche."""
+
     id: str
     lastname: str
     firstname: str
@@ -102,13 +121,14 @@ class FicheResponse(BaseModel):
                 "origin_contact": "Salon",
                 "works_planned": [],
                 "commentary": "Premier contact",
-                "status": "In Progress"
+                "status": "In Progress",
             }
         }
 
 
 class MessageResponse(BaseModel):
     """Schéma de réponse générique avec message."""
+
     message: str
     detail: Optional[str] = None
 
@@ -116,6 +136,6 @@ class MessageResponse(BaseModel):
         json_schema_extra = {
             "example": {
                 "message": "Opération réussie",
-                "detail": "La fiche a été supprimée avec succès"
+                "detail": "La fiche a été supprimée avec succès",
             }
         }

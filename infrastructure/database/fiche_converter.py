@@ -1,8 +1,10 @@
 # converters/fiche_converter.py
 from typing import List
-from infrastructure.database.fiche_model import FicheModel, WorkPlannedModel
+
 from contact_fiche.entities.fiche_entity import Fiche
 from contact_fiche.entities.works_planned_entity import WorksPlanned
+from infrastructure.database.fiche_model import FicheModel, WorkPlannedModel
+
 
 class FicheConverter:
     @staticmethod
@@ -27,7 +29,7 @@ class FicheConverter:
             origin_contact=model.origin_contact,
             status=model.status,
             commentary=model.commentary,
-            works_planned=wp_list
+            works_planned=wp_list,
         )
 
     @staticmethod
@@ -35,12 +37,7 @@ class FicheConverter:
         wp_models: List[WorkPlannedModel] = []
         if entity.works_planned:
             for wp in entity.works_planned:
-                wp_models.append(
-                    WorkPlannedModel(
-                        work=wp.work,
-                        details=wp.details
-                    )
-                )
+                wp_models.append(WorkPlannedModel(work=wp.work, details=wp.details))
 
         return FicheModel(
             id=entity.id,
@@ -58,5 +55,5 @@ class FicheConverter:
             origin_contact=entity.origin_contact,
             status=entity.status,
             commentary=entity.commentary,
-            work_planned=wp_models
+            work_planned=wp_models,
         )

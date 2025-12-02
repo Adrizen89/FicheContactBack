@@ -1,11 +1,13 @@
 from typing import List, Optional
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import SQLAlchemyError
 
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
+
+from contact_fiche.entities.fiche_entity import Fiche
 from contact_fiche.enums import Status
 from infrastructure.database.fiche_converter import FicheConverter
 from infrastructure.database.fiche_model import FicheModel, WorkPlannedModel
-from contact_fiche.entities.fiche_entity import Fiche
+
 
 class SQLiteFicheRepository:
     def __init__(self, session: Session) -> None:
@@ -27,7 +29,9 @@ class SQLiteFicheRepository:
     def update(self, id: str, fiche: Fiche) -> None:
         try:
             # Récupérer la fiche existante
-            fiche_model = self.session.query(FicheModel).filter(FicheModel.id == id).first()
+            fiche_model = (
+                self.session.query(FicheModel).filter(FicheModel.id == id).first()
+            )
             if not fiche_model:
                 raise ValueError(f"Fiche avec l'id {id} non trouvée")
 
@@ -50,14 +54,14 @@ class SQLiteFicheRepository:
             # Supprimer les anciens works_planned et ajouter les nouveaux
             if fiche.works_planned:
                 # Supprimer les anciens
-                self.session.query(WorkPlannedModel).filter(WorkPlannedModel.fiche_id == id).delete()
+                self.session.query(WorkPlannedModel).filter(
+                    WorkPlannedModel.fiche_id == id
+                ).delete()
 
                 # Ajouter les nouveaux
                 for wp in fiche.works_planned:
                     wp_model = WorkPlannedModel(
-                        fiche_id=id,
-                        work=wp.work,
-                        details=wp.details
+                        fiche_id=id, work=wp.work, details=wp.details
                     )
                     self.session.add(wp_model)
 
@@ -68,7 +72,9 @@ class SQLiteFicheRepository:
 
     def delete(self, id: str) -> None:
         try:
-            fiche_model = self.session.query(FicheModel).filter(FicheModel.id == id).first()
+            fiche_model = (
+                self.session.query(FicheModel).filter(FicheModel.id == id).first()
+            )
             if not fiche_model:
                 raise ValueError(f"Fiche avec l'id {id} non trouvée")
 
@@ -92,7 +98,9 @@ class SQLiteFicheRepository:
 
     def valider_fiche(self, id: str) -> None:
         try:
-            fiche_model = self.session.query(FicheModel).filter(FicheModel.id == id).first()
+            fiche_model = (
+                self.session.query(FicheModel).filter(FicheModel.id == id).first()
+            )
             if not fiche_model:
                 raise ValueError(f"Fiche avec l'id {id} non trouvée")
 
@@ -101,4 +109,3 @@ class SQLiteFicheRepository:
         except SQLAlchemyError as e:
             self.session.rollback()
             raise RuntimeError(f"Erreur lors de la validation de la fiche: {str(e)}")
-

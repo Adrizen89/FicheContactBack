@@ -1,7 +1,8 @@
 import logging
-import sys
-from pythonjsonlogger import jsonlogger
 import os
+import sys
+
+from pythonjsonlogger import jsonlogger
 
 
 def setup_logging():
@@ -23,14 +24,14 @@ def setup_logging():
     # Format JSON pour la production
     if os.getenv("ENVIRONMENT") == "production":
         formatter = jsonlogger.JsonFormatter(
-            '%(asctime)s %(name)s %(levelname)s %(message)s',
-            datefmt='%Y-%m-%d %H:%M:%S'
+            "%(asctime)s %(name)s %(levelname)s %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
         )
     else:
         # Format lisible pour le développement
         formatter = logging.Formatter(
-            '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            datefmt='%Y-%m-%d %H:%M:%S'
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
         )
 
     handler.setFormatter(formatter)

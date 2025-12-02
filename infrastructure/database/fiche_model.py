@@ -1,12 +1,17 @@
 from datetime import date
-from sqlalchemy import Column, String, Enum as SQLAEnum, ForeignKey, Integer, JSON
+
+from sqlalchemy import JSON, Column
+from sqlalchemy import Enum as SQLAEnum
+from sqlalchemy import ForeignKey, Integer, String
 from sqlalchemy.orm import declarative_base, relationship
+
 from contact_fiche.entities.fiche_entity import Fiche
 from contact_fiche.enums import OriginContact, Status
 from infrastructure.database.connexion import get_engine
 
 Base = declarative_base()
 engine = get_engine()
+
 
 class FicheModel(Base):
     __tablename__ = "fiche"
@@ -31,7 +36,6 @@ class FicheModel(Base):
     )
 
 
-
 class WorkPlannedModel(Base):
     __tablename__ = "work_planned"
 
@@ -40,7 +44,7 @@ class WorkPlannedModel(Base):
     work = Column(String, nullable=False)
     # Stocke toutes les données dynamiques validées via vos JSON schemas
     details = Column(JSON, nullable=False)
-    
+
     # Relation inverse vers la fiche
     fiche = relationship("FicheModel", back_populates="work_planned")
 
