@@ -34,8 +34,10 @@ class CreateFicheUsecase(Usecase):
         statut_habitation: str,
         commentary: str,
         origin_contact: OriginContact,
+        planned_works: Optional[List[str]] = None,
         works_planned: Optional[List[WorksPlanned]] = None,
     ) -> Fiche:
+        planned_works_list = planned_works or []
         works_planned_list = works_planned or []
 
         fiche = Fiche(
@@ -52,6 +54,7 @@ class CreateFicheUsecase(Usecase):
             type_logement=type_logement,
             statut_habitation=statut_habitation,
             origin_contact=origin_contact,
+            planned_works=planned_works_list,
             works_planned=works_planned_list,
             commentary=commentary,
             status=Status.IN_PROGRESS,

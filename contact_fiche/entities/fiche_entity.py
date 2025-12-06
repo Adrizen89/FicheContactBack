@@ -20,6 +20,9 @@ class Fiche(BaseModel):
     type_logement: str
     statut_habitation: str
     origin_contact: OriginContact
+    # Liste simple des travaux prévus (pense-bête) ex: ["fenetre", "porte_entree"]
+    planned_works: Optional[List[str]] = Field(default_factory=list)
+    # Travaux validés avec détails complets (ajoutés via formulaire dynamique)
     works_planned: Optional[List[WorksPlanned]] = Field(default_factory=list)
     commentary: str
     status: Status = Status.DEFAULT

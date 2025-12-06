@@ -11,8 +11,8 @@
 4. Validation finale → Fiche "Completed"
 
 **Backend** : FastAPI déployé sur VPS
-- URL Production : `http://IP_VPS:8000`
-- Documentation API : `http://IP_VPS:8000/docs`
+- URL Production : `http://72.61.109.185:8000`
+- Documentation API : `http://72.61.109.185:8000/docs`
 
 ---
 
@@ -230,7 +230,7 @@ Content-Type: application/json
   "type_logement": "Maison",
   "statut_habitation": "Propriétaire",
   "origin_contact": "Salon",
-  "planned_works": ["fenetre", "porte"],
+  "planned_works": ["fenetre", "porte_entree"],
   "commentary": "Premier contact suite au salon"
 }
 ```
@@ -781,6 +781,18 @@ export const worksApi = {
 
 ```typescript
 /**
+ * ⚠️ IMPORTANT: Différence entre planned_works et works_planned
+ *
+ * - planned_works: Liste SIMPLE de strings (pense-bête lors de la création)
+ *   Exemple: ["fenetre", "porte_entree", "volet_roulant"]
+ *   Utilisé dans le formulaire de création (checkboxes) pour se rappeler quels travaux faire
+ *
+ * - works_planned: Liste d'OBJETS avec détails complets (ajoutés via formulaire dynamique)
+ *   Exemple: [{work: "fenetre", details: {materiau: "PVC", color: "BLANC", ...}}]
+ *   Ajouté APRÈS la création via PUT /fiche/{id}/travaux
+ */
+
+/**
  * Enum pour le statut de la fiche
  */
 export enum Status {
@@ -833,6 +845,9 @@ export interface Fiche {
   type_logement: string
   statut_habitation: string
   origin_contact: OriginContact
+  // Liste simple des travaux prévus (pense-bête) - Ajoutée lors de la création
+  planned_works: string[]
+  // Travaux validés avec détails complets - Ajoutés via formulaire dynamique
   works_planned: WorksPlanned[]
   commentary: string
   status: Status
@@ -853,7 +868,8 @@ export interface FicheCompletionData {
  */
 export type FicheCreateInput = Omit<Fiche, 'id' | 'status' | 'works_planned'> & {
   id?: string
-  planned_works?: string[]
+  // planned_works est inclus (liste simple de strings)
+  planned_works: string[]
 }
 
 /**

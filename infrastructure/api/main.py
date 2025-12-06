@@ -176,6 +176,7 @@ def create_fiche(
             statut_habitation=fiche.statut_habitation,
             commentary=fiche.commentary,
             origin_contact=fiche.origin_contact,
+            planned_works=fiche.planned_works,
             works_planned=fiche.works_planned,
         )
         logger.info("Fiche created successfully", extra={"fiche_id": created_fiche.id})

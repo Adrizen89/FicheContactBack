@@ -29,6 +29,7 @@ class FicheConverter:
             origin_contact=model.origin_contact,
             status=model.status,
             commentary=model.commentary,
+            planned_works=model.planned_works or [],
             works_planned=wp_list,
         )
 
@@ -55,5 +56,6 @@ class FicheConverter:
             origin_contact=entity.origin_contact,
             status=entity.status,
             commentary=entity.commentary,
+            planned_works=entity.planned_works or [],
             work_planned=wp_models,
         )

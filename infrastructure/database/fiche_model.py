@@ -28,6 +28,10 @@ class FicheModel(Base):
     origin_contact = Column(SQLAEnum(OriginContact), nullable=False)
     status = Column(SQLAEnum(Status), default=Status.DEFAULT)
     commentary = Column(String, nullable=True)
+    # Liste simple des travaux prévus (pense-bête lors de la création)
+    # Ex: ["fenetre", "porte_entree"]
+    planned_works = Column(JSON, default=list, nullable=True)
+    # Relation vers les travaux validés avec détails complets
     work_planned = relationship(
         "WorkPlannedModel", back_populates="fiche", cascade="all, delete-orphan"
     )

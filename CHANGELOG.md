@@ -2,6 +2,39 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [1.1.1] - 2025-12-06
+
+### 🐛 Corrections critiques
+
+#### Bug : planned_works non sauvegardés
+
+**Problème** : Les travaux prévus (checkboxes lors de la création) n'étaient pas sauvegardés ni renvoyés par l'API.
+
+**Cause** : Le champ `planned_works` existait en base de données mais n'était pas défini dans les modèles backend.
+
+**Solution** :
+- ✅ Ajout de `planned_works` dans `FicheModel` (SQLAlchemy)
+- ✅ Ajout de `planned_works` dans l'entité `Fiche` (Pydantic)
+- ✅ Mise à jour du `FicheConverter` pour gérer le mapping
+- ✅ Mise à jour du `CreateFicheUsecase` pour accepter le paramètre
+- ✅ Mise à jour de l'endpoint POST `/fiche` pour passer les données
+- ✅ Migration PostgreSQL idempotente (`IF NOT EXISTS`)
+
+**Documentation** :
+- 📝 `BUGFIX_PLANNED_WORKS.md` : Analyse détaillée du problème et de la solution
+- 📝 `migrations/README.md` : Guide des migrations et architecture des données
+- 📝 `FRONTEND_SPECIFICATIONS.md` : Clarification `planned_works` vs `works_planned`
+
+**Fichiers modifiés** :
+- `infrastructure/database/fiche_model.py`
+- `contact_fiche/entities/fiche_entity.py`
+- `infrastructure/database/fiche_converter.py`
+- `contact_fiche/contact_fiche_usecases.py`
+- `infrastructure/api/main.py`
+- `migrations/002_add_planned_works_postgres.sql`
+
+---
+
 ## [1.1.0] - 2025-12-01
 
 ### 🎉 Production-Ready Release
